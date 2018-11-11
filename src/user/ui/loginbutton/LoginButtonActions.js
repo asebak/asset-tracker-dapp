@@ -1,4 +1,40 @@
-import AuthenticationContract from '../../../../build/contracts/Authentication.json'
+import { uport } from './../../../util/connectors.js'
+//import { browserHistory } from 'react-router'
+import { history } from './../../../store';
+
+export const USER_LOGGED_IN = 'USER_LOGGED_IN'
+function userLoggedIn(user) {
+    return {
+        type: USER_LOGGED_IN,
+        payload: user
+    }
+}
+
+export function loginUser() {
+    return function(dispatch) {
+        // UPort and its web3 instance are defined in ./../../../util/wrappers.
+        // Request uPort persona of account passed via QR
+        uport.requestCredentials().then((credentials) => {
+            dispatch(userLoggedIn(credentials))
+
+            // Used a manual redirect here as opposed to a wrapper.
+            // This way, once logged in a user can still access the home page.
+            var currentLocation = history.getCurrentLocation()
+
+            // var currentLocation = browserHistory.getCurrentLocation()
+
+            if ('redirect' in currentLocation.query)
+            {
+                return history.push(decodeURIComponent(currentLocation.query.redirect));
+                //return browserHistory.push(decodeURIComponent(currentLocation.query.redirect))
+            }
+              return history.push('/dashboard');
+          //  return browserHistory.push('/dashboard')
+        })
+    }
+}
+
+/*import AuthenticationContract from '../../../../build/contracts/Authentication.json'
 import { browserHistory } from 'react-router'
 import store from '../../../store'
 
@@ -68,3 +104,4 @@ export function loginUser() {
     console.error('Web3 is not initialized.');
   }
 }
+*/
