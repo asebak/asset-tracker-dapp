@@ -13,3 +13,4 @@ script:
   - sleep 5
   - truffle test
   - truffle migrate --network development
+  - npm install
