@@ -5,9 +5,11 @@ before_script:
   - npm install -g ganache-cli
   - npm install -g truffle
 
+install:
+  - npm install
+
 script:
   - ganache-cli &
   - sleep 5
   - truffle test --network integration
   - truffle migrate --network integration
-  - npm install
