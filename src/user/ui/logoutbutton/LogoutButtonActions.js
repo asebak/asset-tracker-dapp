@@ -1,5 +1,4 @@
-//import { browserHistory } from 'react-router'
-import { history } from './../../../store';
+import { browserHistory } from 'react-router'
 
 export const USER_LOGGED_OUT = 'USER_LOGGED_OUT'
 function userLoggedOut(user) {
@@ -15,7 +14,6 @@ export function logoutUser() {
     dispatch(userLoggedOut())
 
     // Redirect home.
-    //return browserHistory.push('/')
-      return history.push('/')
+    return browserHistory.push('/')
   }
 }
