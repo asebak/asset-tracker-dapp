@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { Route } from 'react-router'
 import { Link } from 'react-router-dom'
 import HomeContainer from './layouts/home/HomeContainer'
+import { AccountData } from 'drizzle-react-components'
+import logo from './logo.png'
 
 
 // Styles
@@ -15,10 +17,20 @@ class App extends Component {
     return (
       <div className="App">
           <nav className="navbar pure-menu pure-menu-horizontal">
-              <Link to="/" className="pure-menu-heading pure-menu-link">Health Promoter</Link>
-              <ul className="pure-menu-list navbar-left">
+              <img className="main-logo" src={logo} alt="Logo"></img>
+              <Link to="/" className="pure-menu-heading">Health Promoter</Link>
+              <ul className="pure-menu-list navbar-right">
                   <li className="pure-menu-item">
-                      <Link to="/profile" className="pure-menu-link">Profile</Link>
+                      <Link to="/journal" className="pure-menu-link">Journal</Link>
+                  </li>
+
+              </ul>
+              <ul className="pure-menu-list navbar-right">
+                  <li className="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                      <a href="#" id="menuLink1" className="pure-menu-link">Profile</a>
+                      <ul className="pure-menu-children">
+                          <AccountData accountIndex="0" units="ether" precision="3" />
+                      </ul>
                   </li>
               </ul>
           </nav>
