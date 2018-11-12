@@ -27,7 +27,7 @@ class App extends Component {
               </ul>
               <ul className="pure-menu-list navbar-right">
                   <li className="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-                      <a href="#" id="menuLink1" className="pure-menu-link">Profile</a>
+                      <Link to="/" id="menuLink1" className="pure-menu-link">Profile</Link>
                       <ul className="pure-menu-children">
                           <AccountData accountIndex="0" units="ether" precision="3" />
                       </ul>
