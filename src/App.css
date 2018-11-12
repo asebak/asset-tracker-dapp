@@ -53,7 +53,7 @@ ul li:not(:last-child) {
 .navbar {
   position: fixed;
   padding: 5px;
-  background: #0c1a2b;
+  background: black;
   font-family: 'Oswald', 'Arial Narrow', sans-serif;
 }
 
@@ -107,4 +107,9 @@ ul li:not(:last-child) {
   color: darkgreen;
   background: darkseagreen;
   border: 1px solid darkgreen;
+}
+
+.main-logo {
+  width: 2%;
+  height: 2%;
 }
