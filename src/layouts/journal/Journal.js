@@ -1,6 +1,4 @@
 import React, { Component } from 'react'
-import { AccountData, ContractData, ContractForm } from 'drizzle-react-components'
-import logo from '../../logo.png'
 
 class Journal extends Component {
   render() {
