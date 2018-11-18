@@ -43,7 +43,7 @@ contract CalorieTracker is usingOraclize {
 
 
     function CalorieTracker() {
-
+       // oraclize_query(1*day, "URL", "");
     }
 
     function addSettings (uint _goalCalories) public {
