@@ -32,11 +32,67 @@ contract('CalorieTracker', function(accounts) {
         assert.equal(dailyActivites[2], caloriesBurned, 'carlories should be set');
     });
 
-    it("... fetch an activity when no were added", async () => {
+    it("... cannot fetch an activity when no were added", async () => {
         const instance = await CalorieTracker.deployed();
         let exception = null;
         try {
             await instance.fetchDailyActivity(3);
+        } catch (e) {
+            exception = e
+        }
+
+        assert.ok(exception instanceof Error)
+    });
+
+    it("...should add a meals.", async () => {
+        const instance = await CalorieTracker.deployed();
+        let name = "chicken";
+        let mealType = 0;
+        let calories = 120;
+        await instance.addMeal(name, calories, mealType);
+        let food = await instance.fetchDailyMeal(0, mealType);
+        assert.equal(food[0], name, 'food name should be set');
+        assert.equal(food[1], calories, 'calories of food should be set');
+
+        name = "beef";
+        mealType = 1;
+        calories = 300;
+        await instance.addMeal(name, calories, mealType);
+        food = await instance.fetchDailyMeal(0, mealType);
+        assert.equal(food[0], name, 'food name should be set');
+        assert.equal(food[1], calories, 'calories of food should be set');
+
+        name = "cake";
+        mealType = 2;
+        calories = 700;
+        await instance.addMeal(name, calories, mealType);
+        food = await instance.fetchDailyMeal(0, mealType);
+        assert.equal(food[0], name, 'food name should be set');
+        assert.equal(food[1], calories, 'calories of food should be set');
+    });
+
+    it("...should add multiple meals for the same meal type.", async () => {
+        const instance = await CalorieTracker.deployed();
+        let name = "cookies";
+        let mealType = 3;
+        let calories = 120;
+        await instance.addMeal(name, calories, mealType);
+
+        name = "coffee";
+        mealType = 3;
+        calories = 10;
+        await instance.addMeal(name, calories, mealType);
+        const total = await instance.getTotalDailyMeals(mealType);
+        console.log(total);
+        assert.equal(2, total, "meals should be 2")
+    });
+
+    it("... cannot fetch an meal when no were added", async () => {
+        const instance = await CalorieTracker.deployed();
+        const mealType = 3;
+        let exception = null;
+        try {
+            await instance.fetchDailyMeal(3,mealType );
         } catch (e) {
             exception = e
         }

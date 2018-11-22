@@ -53,9 +53,9 @@ contract CalorieTracker is usingOraclize {
     }
 
     function addActivity(string _name, uint _time, uint _caloriesBurned) public {
-        //todo check if next day and add it to that
         Activity memory activity = Activity( _name, _time, _caloriesBurned);
         daily[msg.sender].activities.push(activity);
+        //todo emit event
     }
 
     function addMeal(string _name, uint _calories, MealType _type) public {
@@ -72,6 +72,7 @@ contract CalorieTracker is usingOraclize {
         else if(_type == MealType.SNACK) {
             daily[msg.sender].snacks.push(meal);
         }
+        //todo emit event
     }
 
     function getTotalDailyActivities()  public view returns (uint) {
@@ -83,4 +84,42 @@ contract CalorieTracker is usingOraclize {
         require (_index < activities.length);
         return (activities[_index].name, activities[_index].time, activities[_index].caloriesBurned);
     }
+
+    function getTotalDailyMeals(MealType _type) public view returns (uint) {
+        Meal[] meals;
+        if(_type == MealType.BREAKFAST){
+            meals = daily[msg.sender].breakfast;
+        } else if(_type == MealType.LUNCH) {
+            meals = daily[msg.sender].lunch;
+        }
+        else if(_type == MealType.DINNER) {
+            meals = daily[msg.sender].dinner;
+        }
+        else if(_type == MealType.SNACK) {
+            meals = daily[msg.sender].snacks;
+        }
+        return meals.length;
+    }
+
+    function fetchDailyMeal(uint _index, MealType _type) public view returns (string, uint) {
+        Meal[] meals;
+        if(_type == MealType.BREAKFAST){
+            meals = daily[msg.sender].breakfast;
+        } else if(_type == MealType.LUNCH) {
+            meals = daily[msg.sender].lunch;
+        }
+        else if(_type == MealType.DINNER) {
+            meals = daily[msg.sender].dinner;
+        }
+        else if(_type == MealType.SNACK) {
+            meals = daily[msg.sender].snacks;
+        }
+        else{
+            return;
+        }
+        require (_index < meals.length);
+
+        return (meals[_index].foodName, meals[_index].calorieCount);
+    }
+
 }
