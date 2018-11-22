@@ -1,4 +1,5 @@
 pragma solidity ^0.4.0;
+pragma experimental ABIEncoderV2;
 
 import "oraclize-api/usingOraclize.sol";
 
@@ -41,7 +42,6 @@ contract CalorieTracker is usingOraclize {
 
     mapping(address => mapping(uint256 => DailyCalorieIntake)) public overall;
 
-
     function CalorieTracker() {
        // oraclize_query(1*day, "URL", "");
     }
@@ -54,7 +54,7 @@ contract CalorieTracker is usingOraclize {
 
     function addActivity(string _name, uint _time, uint _caloriesBurned) public {
         //todo check if next day and add it to that
-        Activity memory activity = Activity(_name, _time, _caloriesBurned);
+        Activity memory activity = Activity( _name, _time, _caloriesBurned);
         daily[msg.sender].activities.push(activity);
     }
 
@@ -72,5 +72,15 @@ contract CalorieTracker is usingOraclize {
         else if(_type == MealType.SNACK) {
             daily[msg.sender].snacks.push(meal);
         }
+    }
+
+    function getTotalDailyActivities()  public view returns (uint) {
+        return daily[msg.sender].activities.length;
+    }
+
+    function fetchDailyActivity(uint _index)  public view returns (string, uint, uint) {
+        Activity[] activities = daily[msg.sender].activities;
+        require (_index < activities.length);
+        return (activities[_index].name, activities[_index].time, activities[_index].caloriesBurned);
     }
 }

@@ -26,10 +26,21 @@ contract('CalorieTracker', function(accounts) {
         const time = 0;
         const caloriesBurned = 500;
         await instance.addActivity(name, time, caloriesBurned);
-
-  //      const dailyActivites = await instance.daily.call(accounts[0]);
-//        console.log(dailyActivites);
-
+        const dailyActivites = await instance.fetchDailyActivity(0);
+        assert.equal(dailyActivites[0], name, 'activity name should be set');
+        assert.equal(dailyActivites[1], time, 'time should be set');
+        assert.equal(dailyActivites[2], caloriesBurned, 'carlories should be set');
     });
 
+    it("... fetch an activity when no were added", async () => {
+        const instance = await CalorieTracker.deployed();
+        let exception = null;
+        try {
+            await instance.fetchDailyActivity(3);
+        } catch (e) {
+            exception = e
+        }
+
+        assert.ok(exception instanceof Error)
+    });
 });
