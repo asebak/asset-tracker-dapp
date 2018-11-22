@@ -1,23 +1,20 @@
 var CalorieTracker = artifacts.require("./CalorieTracker.sol");
-
 contract('CalorieTracker', function(accounts) {
 
     it("...should add settings.", async () => {
         const instance = await CalorieTracker.deployed();
+        require('truffle-test-utils').init();
         const calorieMax = 5000;
+        const result = await instance.addSettings(calorieMax);
+        assert.web3Event(result, {
+            event: 'CalorieSettingsSet',
+            args: {
+                goalCalories: calorieMax,
+            }
+        }, 'The event is emitted');
 
-        var eventEmitted = false;
-
-        var event = instance.CalorieSettingsSet();
-
-        await event.watch(() => {
-            eventEmitted = true
-        });
-
-        await instance.addSettings(calorieMax);
         const settings = await instance.settings.call(accounts[0]);
         assert.equal(settings, calorieMax, 'max calories should be set');
-        assert.equal(eventEmitted, true, 'adding a setting should trigger CalorieSettingsSet event')
     });
 
     it("...should add an activity.", async () => {
@@ -83,7 +80,6 @@ contract('CalorieTracker', function(accounts) {
         calories = 10;
         await instance.addMeal(name, calories, mealType);
         const total = await instance.getTotalDailyMeals(mealType);
-        console.log(total);
         assert.equal(2, total, "meals should be 2")
     });
 

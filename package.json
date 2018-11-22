@@ -5,7 +5,8 @@
     "ganache-cli": "^6.1.6",
     "openzeppelin-solidity": "^1.10.0",
     "truffle": "^4.1.13",
-    "truffle-hdwallet-provider": "^0.0.5"
+    "truffle-hdwallet-provider": "^0.0.5",
+    "truffle-test-utils": "^0.1.0"
   },
   "dependencies": {
     "drizzle": "^1.2.5",

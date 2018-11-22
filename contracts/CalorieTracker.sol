@@ -32,6 +32,7 @@ contract CalorieTracker is usingOraclize {
         Meal[] snacks;
         Activity[] activities;
         uint256 date;
+        address entityAddress;
     }
 
     enum MealType {BREAKFAST, LUNCH, DINNER, SNACK}
@@ -40,10 +41,20 @@ contract CalorieTracker is usingOraclize {
 
     mapping(address => DailyCalorieIntake) public daily;
 
-    mapping(address => mapping(uint256 => DailyCalorieIntake)) public overall;
+    mapping(address =>  DailyCalorieIntake[]) public overall;
 
     function CalorieTracker() {
-       // oraclize_query(1*day, "URL", "");
+     //  oraclize_query(1*day, "URL", "");
+      //  for (uint i = 0; i < daily.length; i++) {
+       //    address entityAddress = daily[i].entityAddress;
+        //    overall[entityAddress].push(daily[i]);
+            //daily[entityAddress]
+       // }
+    }
+
+    function __callback(bytes32 myid, string result) {
+        if (msg.sender != oraclize_cbAddress()) throw;
+
     }
 
     function addSettings (uint _goalCalories) public {
@@ -54,6 +65,7 @@ contract CalorieTracker is usingOraclize {
 
     function addActivity(string _name, uint _time, uint _caloriesBurned) public {
         Activity memory activity = Activity( _name, _time, _caloriesBurned);
+        daily[msg.sender].entityAddress = msg.sender; //not the best approach
         daily[msg.sender].activities.push(activity);
         //todo emit event
     }
@@ -72,6 +84,7 @@ contract CalorieTracker is usingOraclize {
         else if(_type == MealType.SNACK) {
             daily[msg.sender].snacks.push(meal);
         }
+        daily[msg.sender].entityAddress = msg.sender; //not the best approach
         //todo emit event
     }
 
