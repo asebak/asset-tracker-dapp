@@ -1,6 +1,4 @@
-import ComplexStorage from './../build/contracts/ComplexStorage.json'
-import SimpleStorage from './../build/contracts/SimpleStorage.json'
-import TutorialToken from './../build/contracts/TutorialToken.json'
+import CalorieTracker from './../build/contracts/CalorieTracker.json'
 
 const drizzleOptions = {
   web3: {
@@ -11,16 +9,14 @@ const drizzleOptions = {
     }
   },
   contracts: [
-    ComplexStorage,
-    SimpleStorage,
-    TutorialToken
+      CalorieTracker
   ],
   events: {
-    SimpleStorage: ['StorageSet']
+      CalorieTracker: ['CalorieSettingsSet']
   },
   polls: {
     accounts: 1500
   }
-}
+};
 
 export default drizzleOptions

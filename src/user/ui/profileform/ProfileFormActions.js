@@ -1,9 +1,8 @@
-import AuthenticationContract from '../../../../build/contracts/Authentication.json'
 import store from '../../../store'
 
-const contract = require('truffle-contract')
+const contract = require('truffle-contract');
 
-export const USER_UPDATED = 'USER_UPDATED'
+export const USER_UPDATED = 'USER_UPDATED';
 function userUpdated(user) {
   return {
     type: USER_UPDATED,
@@ -19,8 +18,8 @@ export function updateUser(name) {
 
     return function(dispatch) {
       // Using truffle-contract we create the authentication object.
-      const authentication = contract(AuthenticationContract)
-      authentication.setProvider(web3.currentProvider)
+    //  const authentication = contract(AuthenticationContract)
+    //  authentication.setProvider(web3.currentProvider)
 
       // Declaring this for later so we can chain functions on Authentication.
       var authenticationInstance
@@ -32,7 +31,7 @@ export function updateUser(name) {
           console.error(error);
         }
 
-        authentication.deployed().then(function(instance) {
+      /*  authentication.deployed().then(function(instance) {
           authenticationInstance = instance
 
           // Attempt to login user.
@@ -47,7 +46,9 @@ export function updateUser(name) {
           .catch(function(result) {
             // If error...
           })
+
         })
+        */
       })
     }
   } else {
