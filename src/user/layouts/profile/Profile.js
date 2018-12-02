@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import ProfileFormContainer from '../../ui/profileform/ProfileFormContainer'
 import {AccountData} from "drizzle-react-components";
 
 class Profile extends Component {
