@@ -1,4 +1,4 @@
-import CalorieTracker from './../build/contracts/CalorieTracker.json'
+import AssetTracker from './../build/contracts/AssetTracker.json'
 
 const drizzleOptions = {
   web3: {
@@ -9,10 +9,10 @@ const drizzleOptions = {
     }
   },
   contracts: [
-      CalorieTracker
+      AssetTracker
   ],
   events: {
-      CalorieTracker: ['CalorieSettingsSet']
+      AssetTracker: ['AssetEventCreated', "AssetCreated"]
   },
   polls: {
     accounts: 1500

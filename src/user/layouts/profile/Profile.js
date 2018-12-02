@@ -1,18 +1,14 @@
 import React, { Component } from 'react'
-import ProfileFormContainer from '../../ui/profileform/ProfileFormContainer'
+import {AccountData} from "drizzle-react-components";
 
 class Profile extends Component {
   render() {
     return(
-      <main className="container">
-        <div className="pure-g">
           <div className="pure-u-1-1">
-            <h1>Profile</h1>
-            <p>Edit your account details here.</p>
-            <ProfileFormContainer />
+            <h2>Profile</h2>
+              <AccountData accountIndex="0" units="ether" precision="3"/>
+            <h2>Asset History</h2>
           </div>
-        </div>
-      </main>
     )
   }
 }

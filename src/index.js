@@ -18,7 +18,7 @@ ReactDOM.render((
               <Router history={history} store={store}>
                 <div>
                     <Route exact path="/" component={App} />
-                    <Route exact path="/journal" component={App} />
+                    <Route exact path="/register" component={App} />
                     <Route exact path="/profile" component={App} />
                 </div>
               </Router>
