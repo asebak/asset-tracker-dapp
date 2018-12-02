@@ -1,5 +1,5 @@
-var CalorieTracker = artifacts.require("CalorieTracker");
+var AssetTracker = artifacts.require("AssetTracker.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(CalorieTracker);
+    deployer.deploy(AssetTracker);
 };

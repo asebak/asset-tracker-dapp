@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { ContractData, ContractForm } from 'drizzle-react-components'
+//import { ContractData, ContractForm } from 'drizzle-react-components'
 
 class Home extends Component {
   render() {
