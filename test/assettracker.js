@@ -52,7 +52,7 @@ contract('AssetTracker', function(accounts) {
         const eventType = "SENSOR";
         const data = ["testing data"];
         await instance.registerAsset(time, name, id, {from: accounts[0]});
-        const result = await instance.addEvent(id, eventId,  eventName, eventType, data.map((arg) => web3.toHex(arg)), {from: accounts[0]});
+        const result = await instance.addEvent(id, eventId,  eventName, eventType, data.map((arg) => web3.toHex(arg)), 0, {from: accounts[0]});
         assert.web3Event(result, {
             event: 'AssetEventCreated',
             args: {
