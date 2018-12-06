@@ -32,7 +32,7 @@ contract('AssetTracker', function(accounts) {
         const intialEvent = "created";
         //console.log(assetEvent);
         assert.strictEqual(assetEvent[0].toLowerCase(), intialEvent, 'event name should be set');
-        assert.strictEqual(assetEvent[1].toLowerCase(), intialEvent, 'event type should be set');
+        assert.strictEqual(assetEvent[1].valueOf(), '0', 'event type should be set');
     });
 
     it("...an invalid id should return no asset.", async () => {
@@ -49,7 +49,7 @@ contract('AssetTracker', function(accounts) {
         const id = "0x8d73650000000000000000000000000000000000000000000000000000000000";
         const eventId = "0x4d73650000000000000000000000000000000000000000000000000000000000";
         const eventName = "Sensor Reading";
-        const eventType = "SENSOR";
+        const eventType = "1"; //location
         const data = ["testing data"];
         await instance.registerAsset(time, name, id, {from: accounts[0]});
         const result = await instance.addEvent(id, eventId,  eventName, eventType, data.map((arg) => web3.toHex(arg)), 0, {from: accounts[0]});
@@ -62,10 +62,11 @@ contract('AssetTracker', function(accounts) {
 
         const assetEvent = await instance.fetchEvent.call(eventId);
         assert.strictEqual(assetEvent[0], eventName, 'event name should be set');
-        assert.strictEqual(assetEvent[1], eventType, 'event type should be set');
+        assert.strictEqual(assetEvent[1].valueOf(), eventType, 'event type should be set');
         assert.strictEqual(data.length, assetEvent[2].length, 'event data should be present');
 
 
     });
+    
 
 });
