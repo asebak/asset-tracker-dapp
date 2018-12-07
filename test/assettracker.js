@@ -67,6 +67,6 @@ contract('AssetTracker', function(accounts) {
 
 
     });
-    
+
 
 });
