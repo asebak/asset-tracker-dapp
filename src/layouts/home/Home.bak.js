@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 class Home extends Component {
   constructor(props, context) {
     super(props)
-
+  debugger;
     this.contracts = context.drizzle.contracts
     this.handleSetButton = this.handleSetButton.bind(this)
     this.handleSendTokens = this.handleSendTokens.bind(this)

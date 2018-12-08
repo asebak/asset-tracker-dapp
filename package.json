@@ -64,7 +64,8 @@
     "whatwg-fetch": "2.0.3",
     "orbit-db": "^0.19.9",
     "ipfs-api": "^26.1.2",
-    "ipfs": "^0.33.1"
+    "ipfs": "^0.33.1",
+    "react-vertical-timeline-component": "^2.3.1"
   },
   "scripts": {
     "start": "node scripts/start.js",
