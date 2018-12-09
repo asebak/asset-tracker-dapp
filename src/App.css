@@ -31,6 +31,10 @@ code {
   background-color: #0c1a2b;
 }
 
+.button-secondary {
+  background: rgb(66, 184, 221); /* this is a light blue */
+}
+
 .pure-button-primary:hover {
   background-color: #233e5e;
 }

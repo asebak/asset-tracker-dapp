@@ -9,7 +9,7 @@ import './css/open-sans.css'
 import './css/pure-min.css'
 import './App.css'
 import RegisterAssetContainer from "./layouts/registerasset/RegisterAssetContainer";
-import Profile from "./user/layouts/profile/Profile";
+import ProfileContainer from "./layouts/profile/ProfileContainer";
 
 class App extends Component {
     render() {
@@ -36,7 +36,7 @@ class App extends Component {
                     <Switch>
                             <Route exact={true} path="/" component={HomeContainer}/>
                             <Route exact={true} path="/register" component={RegisterAssetContainer}/>
-                            <Route exact={true} path="/profile" component={Profile}/>
+                            <Route exact={true} path="/profile" component={ProfileContainer}/>
                     </Switch>
                     </div>
 
