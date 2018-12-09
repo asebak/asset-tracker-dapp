@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import {Link} from "react-router-dom";
 
 class Home extends Component {
     constructor(props, context) {
@@ -12,7 +13,8 @@ class Home extends Component {
             asset: {
                 date: '',
                 name: '',
-                id: ''
+                id: '',
+                rawId: ''
             }
         };
         this.web3 = context.drizzle.web3;
@@ -26,6 +28,7 @@ class Home extends Component {
                 that.setState({
                     asset: {
                         name: result[0],
+                        rawId: result[1],
                         id: that.web3.utils.toUtf8(result[1]),
                         date: new Date(result[2] * 1000).toISOString()
                     }
@@ -69,7 +72,9 @@ class Home extends Component {
                                 <td>{this.state.asset.id}</td>
                                 <td>{this.state.asset.name}</td>
                                 <td>{this.state.asset.date}</td>
-                                <td><button type="button" className="pure-button pure-button-secondary">View</button></td>
+                                <td>
+                                    <Link to={'/assethistory/' + this.state.asset.rawId} className="pure-menu-link">View</Link>
+                                </td>
                             </tr>
                             </tbody>
                         </table>

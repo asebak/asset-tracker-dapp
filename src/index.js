@@ -20,6 +20,7 @@ ReactDOM.render((
                     <Route exact path="/" component={App} />
                     <Route exact path="/register" component={App} />
                     <Route exact path="/profile" component={App} />
+                    <Route path="/assethistory/:assetId" component={App}/>
                 </div>
               </Router>
           </Provider>
