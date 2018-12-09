@@ -64,8 +64,6 @@ contract('AssetTracker', function(accounts) {
         assert.strictEqual(assetEvent[0], eventName, 'event name should be set');
         assert.strictEqual(assetEvent[1].valueOf(), eventType, 'event type should be set');
         assert.strictEqual(data.length, assetEvent[2].length, 'event data should be present');
-
-
     });
     
 

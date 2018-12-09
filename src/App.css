@@ -113,3 +113,20 @@ ul li:not(:last-child) {
   width: 2%;
   height: 2%;
 }
+
+
+.success {
+  color: rgb(28, 184, 65);
+}
+
+.error {
+  color: rgb(202, 60, 60);
+}
+
+.warning {
+  color: rgb(223, 117, 20);
+}
+
+.secondary {
+  color: rgb(66, 184, 221);
+}

@@ -6,17 +6,45 @@ class RegisterAsset extends Component {
         super(props);
         this.contracts = context.drizzle.contracts;
         this.web3 = context.drizzle.web3;
+        this.onAssetCreated = this.onAssetCreated.bind(this);
+        this.onContractError = this.onContractError.bind(this);
         this.handleRegisterAsset = this.handleRegisterAsset.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this)
+        this.handleInputChange = this.handleInputChange.bind(this);
         this.state = {
             identifier: '',
             assetName: '',
+            showTxMsg: false,
+            txMsg: '',
+            txClassName: '',
             date: Math.floor(new Date().getTime() / 1000)
         };
+        this.contracts.AssetTracker.events
+            .AssetCreated({/* eventOptions */}, this.onAssetCreated)
+            .on('error', this.onContractError);
+    }
+
+    onAssetCreated(error, event) {
+        if (!error) {
+            this.setState({
+                showTxMsg: true,
+                txMsg: 'Asset was created with Id: ' + this.web3.utils.toUtf8(event.raw.data),
+                txClassName: "success"
+            });
+        } else {
+            this.onContractError(error);
+        }
+    }
+
+    onContractError(error) {
+        this.setState({
+            showTxMsg: true,
+            txMsg: 'An error occured: ' + JSON.stringify(error),
+            txClassName: "error"
+        });
     }
 
     handleInputChange(event) {
-        this.setState({[event.target.name]: event.target.value})
+        this.setState({[event.target.name]: event.target.value, showTxMsg: false})
     }
 
     render() {
@@ -43,6 +71,7 @@ class RegisterAsset extends Component {
                                     onClick={() => this.handleRegisterAsset()}>Submit
                             </button>
                         </div>
+                        <span hidden={!this.state.showTxMsg} className={'pure-form-message ' + this.state.txClassName }>{this.state.txMsg}</span>
                     </fieldset>
                 </form>
             </div>
@@ -50,7 +79,6 @@ class RegisterAsset extends Component {
     }
 
     handleRegisterAsset() {
-        debugger;
         this.contracts.AssetTracker.methods.registerAsset(this.state.date, this.state.assetName, this.web3.utils.fromAscii(this.state.identifier)).send();
     }
 
