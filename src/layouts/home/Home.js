@@ -33,7 +33,6 @@ class Home extends Component {
                         date: new Date(result[2] * 1000).toISOString()
                     }
                 });
-                console.log(result);
             }).catch(function (e) {
             console.log(e);
         });

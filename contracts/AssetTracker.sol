@@ -47,10 +47,10 @@ contract AssetTracker is usingOraclize, Pausable {
 
     mapping(address => mapping(bytes32 => AssetEvent)) private assetEvents;
 
-    function getAssetIds() public view returns (bytes32[]) {
-        bytes32[] assetIds;
+    function getAssetIds() public constant returns (bytes32[]) {
+        bytes32[] memory assetIds = new bytes32[](assets[msg.sender].length);
         for (uint i = 0; i < assets[msg.sender].length; i++) {
-            assetIds.push(assets[msg.sender][i].id);
+            assetIds[i] = assets[msg.sender][i].id;
         }
         return assetIds;
     }
