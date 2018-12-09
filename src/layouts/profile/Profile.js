@@ -14,8 +14,9 @@ class Profile extends Component {
 
      viewAssetHistory() {
          this.contracts.AssetTracker.methods.getAssetIds().call()
-             .then(function (e, r) {
-                 console.log(e, r);
+             .then(function (r) {
+                 debugger;
+                 console.log(r);
              }).catch(function (e) {
              console.log(e);
          });

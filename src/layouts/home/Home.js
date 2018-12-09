@@ -17,7 +17,6 @@ class Home extends Component {
         };
         this.web3 = context.drizzle.web3;
         this.account = props.accounts[0];
-
     }
 
     handleViewHistory() {

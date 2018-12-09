@@ -17,8 +17,24 @@ contract('AssetTracker', function(accounts) {
         }, 'The event is emitted');
 
         const asset = await instance.fetchAsset(id);
-        //console.log(asset);
         assert.strictEqual(asset[0], name, 'asset name should be set');
+    });
+
+    it("...get all my asset ids", async () => {
+        const instance = await AssetTracker.deployed();
+        const name = "NFCChip";
+        const time = 0;
+        const id = "0x9d20000000000000000000000000000000000000000000000000000000000000";
+        await instance.registerAsset(time, name, id);
+        const assetIds = await instance.getAssetIds();
+        var containsAssetId = false;
+        for(var i = 0; i < assetIds.length; i++){
+            if(assetIds[i] === id){
+                containsAssetId = true;
+                break;
+            }
+        }
+        assert.strictEqual(containsAssetId, true, 'asset id should be returned after creating it');
     });
 
 
@@ -30,7 +46,6 @@ contract('AssetTracker', function(accounts) {
         await instance.registerAsset(time, name, id, {from: accounts[0]});
         const assetEvent = await instance.fetchEvent.call(id);
         const intialEvent = "created";
-        //console.log(assetEvent);
         assert.strictEqual(assetEvent[0].toLowerCase(), intialEvent, 'event name should be set');
         assert.strictEqual(assetEvent[1].valueOf(), '0', 'event type should be set');
     });
