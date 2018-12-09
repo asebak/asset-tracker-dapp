@@ -22,7 +22,7 @@ code {
 .container {
   box-sizing: border-box;
   width: calc(100% - 60px);
-  max-width: 600px;
+  max-width: 100%;
   padding: 45px 20px;
   margin: 0 auto;
 }
