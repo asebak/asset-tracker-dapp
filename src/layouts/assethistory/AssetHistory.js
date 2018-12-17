@@ -2,17 +2,26 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { VerticalTimeline, VerticalTimelineElement }  from 'react-vertical-timeline-component';
 import 'react-vertical-timeline-component/style.min.css';
+import TimelineIcon from '@material-ui/icons/Timeline';
+import GpsIcon from '@material-ui/icons/LocationOn';
+import QualityIcon from '@material-ui/icons/Healing';
+import TemperatureIcon from '@material-ui/icons/AcUnit';
+import HumidityIcon from '@material-ui/icons/Cloud';
+import AccelerometerIcon from '@material-ui/icons/Cached';
+import CustomIcon from '@material-ui/icons/Help';
 
 class AssetHistory extends Component {
     constructor(props, context) {
         super(props);
         this.contracts = context.drizzle.contracts;
         this.web3 = context.drizzle.web3;
+        this.onSelectChange = this.onEventCreated.bind(this);
         this.onEventCreated = this.onEventCreated.bind(this);
         this.onContractError = this.onContractError.bind(this);
         this.getAssetDetails = this.getAssetDetails.bind(this);
         this.getEvent = this.getEvent.bind(this);
         this.createEvent = this.createEvent.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
         this.assetId = props.match.params.assetId;
         this.state = {
             showTxMsg: false,
@@ -28,11 +37,10 @@ class AssetHistory extends Component {
             newEvent: {
                 assetId: this.assetId,
                 eventId: '',
-                name: '',
-                type: 1,
+                eventName: '',
+                type: "1",
                 data: [],
                 timestamp: ''
-
             },
             eventDetails: []
         };
@@ -43,11 +51,21 @@ class AssetHistory extends Component {
         this.getAssetDetails();
     }
 
+    handleInputChange(event) {
+        let targetName = event.target.name;
+        let currentNewEvent = this.state.newEvent;
+        currentNewEvent[targetName] = event.target.value;
+        this.setState({
+            newEvent: currentNewEvent
+        });
+
+    }
+
+
     getAssetDetails() {
         const that = this;
         this.contracts.AssetTracker.methods.fetchAsset(this.assetId).call()
             .then(function (result) {
-                // debugger;
                 that.setState({
                     asset: {
                         name: result[0],
@@ -64,7 +82,10 @@ class AssetHistory extends Component {
     }
 
     createEvent() {
-
+        let eventDate = Math.floor(new Date(this.state.newEvent.timestamp).getTime() / 1000);
+        let data = this.state.newEvent.data.split("\n");
+        this.contracts.AssetTracker.methods.addEvent(this.assetId,  this.web3.utils.fromAscii("random"), this.state.newEvent.eventName, this.state.newEvent.type,
+           data.map((arg) => this.web3.utils.toHex(arg)), eventDate).send();
     }
 
     async getEvent() {
@@ -75,7 +96,7 @@ class AssetHistory extends Component {
                 name: result[0],
                 type: result[1],
                 data: result[2],
-                date: new Date(result[2] * 1000).toISOString()
+                date: new Date(result[3] * 1000).toISOString()
             });
             this.setState({
                 eventDetails: eventDetails
@@ -123,26 +144,26 @@ class AssetHistory extends Component {
                         </div>
                         <div className="pure-control-group">
                             <label htmlFor="eventtype">Event Type</label>
-                            <select id="eventtype"> /
-                                <option>LOCATION</option>
-                                <option>QUALITY</option>
-                                <option>TEMPERATURE</option>
-                                <option>HUMIDITY</option>
-                                <option>ACCELEROMETER</option>
-                                <option>CUSTOM</option>
+                            <select id="eventtype" onChange={this.onSelectChange}>
+                                <option value="1">LOCATION</option>
+                                <option value="2">QUALITY</option>
+                                <option value="3">TEMPERATURE</option>
+                                <option value="4">HUMIDITY</option>
+                                <option value="5">ACCELEROMETER</option>
+                                <option value="6">CUSTOM</option>
                             </select>
                         </div>
                         <div className="pure-control-group">
                             <label htmlFor="eventname">Event Name</label>
-                            <input id="eventname" type="text"/>
+                            <input name="eventName" id="eventname" type="text" onChange={this.handleInputChange}/>
                         </div>
                         <div className="pure-control-group">
                             <label htmlFor="eventdata">Event Data</label>
-                            <textarea id="eventdata" className="pure-input-1-1"/>
+                            <textarea name="data" id="eventdata" className="pure-input-1-1" onChange={this.handleInputChange}/>
                         </div>
                         <div className="pure-control-group">
                             <label htmlFor="eventdate">Event Date</label>
-                            <input id="eventdate" type="date"/>
+                            <input name="timestamp" id="eventdate" type="date" onChange={this.handleInputChange}/>
                         </div>
                     </fieldset>
 
@@ -158,7 +179,34 @@ class AssetHistory extends Component {
     createTimeline() {
         var timeline = [];
         for (let i = 0; i < this.state.eventDetails.length; i++) {
-            timeline.push(<VerticalTimelineElement className="vertical-timeline-element--work" date={this.state.eventDetails[i].date} key={i} iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}>
+            let icon = {};
+            switch (this.state.eventDetails[i].type) {
+                case "0":
+                    icon = <TimelineIcon />;
+                    break;
+                case "1":
+                    icon = <GpsIcon />;
+                    break;
+                case "2":
+                    icon = <QualityIcon />;
+                    break;
+                case "3":
+                    icon = <TemperatureIcon />;
+                    break;
+                case "4":
+                    icon = <HumidityIcon />;
+                    break;
+                case "5":
+                    icon = <AccelerometerIcon />;
+                    break;
+                case "6":
+                    icon = <CustomIcon />;
+                    break;
+                default:
+                    break;
+            }
+            timeline.push(<VerticalTimelineElement className="vertical-timeline-element--work" date={this.state.eventDetails[i].date} key={i} iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+                                                   icon={icon}>
                 <h3 className="vertical-timeline-element-title">{this.state.eventDetails[i].name}</h3>
                 <p>
                     {JSON.stringify(this.state.eventDetails[i].data)}
@@ -166,6 +214,14 @@ class AssetHistory extends Component {
             </VerticalTimelineElement>)
         }
         return timeline;
+    }
+
+    onSelectChange(event) {
+        this.setState({
+            newEvent:{
+                type: event.target.value
+            }
+        });
     }
 }
 
