@@ -15,7 +15,7 @@ class AssetHistory extends Component {
         super(props);
         this.contracts = context.drizzle.contracts;
         this.web3 = context.drizzle.web3;
-        this.onSelectChange = this.onEventCreated.bind(this);
+        this.onSelectChange = this.onSelectChange.bind(this);
         this.onEventCreated = this.onEventCreated.bind(this);
         this.onContractError = this.onContractError.bind(this);
         this.getAssetDetails = this.getAssetDetails.bind(this);
@@ -39,7 +39,7 @@ class AssetHistory extends Component {
                 eventId: '',
                 eventName: '',
                 type: "1",
-                data: [],
+                data: "",
                 timestamp: ''
             },
             eventDetails: []
@@ -58,7 +58,6 @@ class AssetHistory extends Component {
         this.setState({
             newEvent: currentNewEvent
         });
-
     }
 
 
@@ -83,15 +82,18 @@ class AssetHistory extends Component {
 
     createEvent() {
         let eventDate = Math.floor(new Date(this.state.newEvent.timestamp).getTime() / 1000);
-        let data = this.state.newEvent.data.split("\n");
-        this.contracts.AssetTracker.methods.addEvent(this.assetId,  this.web3.utils.fromAscii("random"), this.state.newEvent.eventName, this.state.newEvent.type,
-           data.map((arg) => this.web3.utils.toHex(arg)), eventDate).send();
+        let data = [];
+        if (this.state.newEvent.data) {
+            data = this.state.newEvent.data.split("\n");
+        }
+        this.contracts.AssetTracker.methods.addEvent(this.assetId, this.web3.utils.fromAscii(Date.now()), this.state.newEvent.eventName, this.state.newEvent.type,
+            data.map((arg) => this.web3.utils.toHex(arg)), eventDate).send();
     }
 
     async getEvent() {
+        const eventDetails = [];
         for (let i = 0; i < this.state.asset.eventIds.length; i++) {
-            const result = await this.contracts.AssetTracker.methods.fetchEvent(this.assetId).call();
-            const eventDetails = this.state.eventDetails;
+            const result = await this.contracts.AssetTracker.methods.fetchEvent(this.state.asset.eventIds[i]).call();
             eventDetails.push({
                 name: result[0],
                 type: result[1],
@@ -109,9 +111,10 @@ class AssetHistory extends Component {
         if (!error) {
             this.setState({
                 showTxMsg: true,
-                txMsg: 'Event was created with Id: ' + this.web3.utils.toUtf8(event.raw.data),
+                txMsg: 'Event was created.',
                 txClassName: "success"
             });
+            this.getEvent();
         } else {
             this.onContractError(error);
         }
@@ -125,7 +128,6 @@ class AssetHistory extends Component {
         });
     }
 
-//ddEvent(bytes32 _assetId, bytes32 _eventId, string _name, uint _type, bytes32[] _data, uint256 _timestamp)
     render() {
         return (
             <div className="pure-u-1-1">
@@ -145,12 +147,12 @@ class AssetHistory extends Component {
                         <div className="pure-control-group">
                             <label htmlFor="eventtype">Event Type</label>
                             <select id="eventtype" onChange={this.onSelectChange}>
-                                <option value="1">LOCATION</option>
-                                <option value="2">QUALITY</option>
-                                <option value="3">TEMPERATURE</option>
-                                <option value="4">HUMIDITY</option>
-                                <option value="5">ACCELEROMETER</option>
-                                <option value="6">CUSTOM</option>
+                                <option value="1">Location</option>
+                                <option value="2">Quality</option>
+                                <option value="3">Temperature</option>
+                                <option value="4">Humidity</option>
+                                <option value="5">Accelerometer</option>
+                                <option value="6">Custom</option>
                             </select>
                         </div>
                         <div className="pure-control-group">
@@ -159,7 +161,8 @@ class AssetHistory extends Component {
                         </div>
                         <div className="pure-control-group">
                             <label htmlFor="eventdata">Event Data</label>
-                            <textarea name="data" id="eventdata" className="pure-input-1-1" onChange={this.handleInputChange}/>
+                            <textarea name="data" id="eventdata" className="pure-input-1-1"
+                                      onChange={this.handleInputChange}/>
                         </div>
                         <div className="pure-control-group">
                             <label htmlFor="eventdate">Event Date</label>
@@ -182,30 +185,32 @@ class AssetHistory extends Component {
             let icon = {};
             switch (this.state.eventDetails[i].type) {
                 case "0":
-                    icon = <TimelineIcon />;
+                    icon = <TimelineIcon/>;
                     break;
                 case "1":
-                    icon = <GpsIcon />;
+                    icon = <GpsIcon/>;
                     break;
                 case "2":
-                    icon = <QualityIcon />;
+                    icon = <QualityIcon/>;
                     break;
                 case "3":
-                    icon = <TemperatureIcon />;
+                    icon = <TemperatureIcon/>;
                     break;
                 case "4":
-                    icon = <HumidityIcon />;
+                    icon = <HumidityIcon/>;
                     break;
                 case "5":
-                    icon = <AccelerometerIcon />;
+                    icon = <AccelerometerIcon/>;
                     break;
                 case "6":
-                    icon = <CustomIcon />;
+                    icon = <CustomIcon/>;
                     break;
                 default:
                     break;
             }
-            timeline.push(<VerticalTimelineElement className="vertical-timeline-element--work" date={this.state.eventDetails[i].date} key={i} iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
+            timeline.push(<VerticalTimelineElement className="vertical-timeline-element--work"
+                                                   date={this.state.eventDetails[i].date} key={i}
+                                                   iconStyle={{background: 'rgb(33, 150, 243)', color: '#fff'}}
                                                    icon={icon}>
                 <h3 className="vertical-timeline-element-title">{this.state.eventDetails[i].name}</h3>
                 <p>
@@ -218,7 +223,7 @@ class AssetHistory extends Component {
 
     onSelectChange(event) {
         this.setState({
-            newEvent:{
+            newEvent: {
                 type: event.target.value
             }
         });
