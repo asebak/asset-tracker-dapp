@@ -80,6 +80,14 @@ contract('AssetTracker', function(accounts) {
         assert.strictEqual(assetEvent[1].valueOf(), eventType, 'event type should be set');
         assert.strictEqual(data.length, assetEvent[2].length, 'event data should be present');
     });
-    
+
+
+    it("...can pause a contract", async () => {
+        const instance = await AssetTracker.new();
+        await instance.pause();
+        var isPaused = await instance.paused();
+        assert.strictEqual(isPaused, true, 'contract is paused');
+
+    });
 
 });

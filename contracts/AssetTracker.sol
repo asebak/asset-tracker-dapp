@@ -1,20 +1,14 @@
 pragma solidity ^0.4.24;
 
-import "oraclize-api/usingOraclize.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 pragma experimental ABIEncoderV2;
 
 
-contract AssetTracker is usingOraclize, Pausable {
+contract AssetTracker is Pausable {
 
-
-    function AssetTracker() {
-
-    }
-
-    function __callback(bytes32 myid, string result) {
-        //if (msg.sender != oraclize_cbAddress()) throw;
+    constructor() public {
+        owner = msg.sender;
     }
 
     struct AssetEvent {
@@ -30,7 +24,6 @@ contract AssetTracker is usingOraclize, Pausable {
         string name;
         bytes32 id;
         bytes32[] assetEventIds;
-        //mapping(uint => AssetEvent) assetEvents;
     }
 
     event AssetCreated (
@@ -55,7 +48,7 @@ contract AssetTracker is usingOraclize, Pausable {
         return assetIds;
     }
 
-    function registerAsset (uint256 _date, string _name, bytes32 _id) public {
+    function registerAsset (uint256 _date, string _name, bytes32 _id) whenNotPaused public {
         Asset asset;
         asset.created = _date;
         asset.id = _id;
@@ -75,7 +68,7 @@ contract AssetTracker is usingOraclize, Pausable {
         assetEvent.timestamp = _date;
     }
 
-    function fetchAsset(bytes32 _id) public view returns (string, bytes32, uint256, bytes32[]) {
+    function fetchAsset(bytes32 _id) public view returns (string, bytes32, uint256, bytes32[])  {
         for(uint i = 0; i < assets[msg.sender].length; i++){
             if(equal(assets[msg.sender][i].id, _id)) {
                 return (assets[msg.sender][i].name, assets[msg.sender][i].id, assets[msg.sender][i].created, assets[msg.sender][i].assetEventIds);
@@ -92,7 +85,7 @@ contract AssetTracker is usingOraclize, Pausable {
         return keccak256(_a) == keccak256(_b);
     }
 
-    function addEvent(bytes32 _assetId, bytes32 _eventId, string _name, uint _type, bytes32[] _data, uint256 _timestamp) public {
+    function addEvent(bytes32 _assetId, bytes32 _eventId, string _name, uint _type, bytes32[] _data, uint256 _timestamp) whenNotPaused public {
         for (uint i = 0; i < assets[msg.sender].length; i++) {
             if (equal(assets[msg.sender][i].id, _assetId)) {
                 assets[msg.sender][i].assetEventIds.push(_eventId);
