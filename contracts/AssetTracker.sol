@@ -94,4 +94,8 @@ contract AssetTracker is Pausable {
             }
         }
     }
+
+    function destroyContract() onlyOwner public {
+        selfdestruct(msg.sender);
+    }
 }
