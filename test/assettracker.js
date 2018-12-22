@@ -6,13 +6,13 @@ contract('AssetTracker', function(accounts) {
         const instance = await AssetTracker.deployed();
         require('truffle-test-utils').init();
         const name = "IoTGateway";
-        const time = 0;
+        const time = 1;
         const id = "0x4d20000000000000000000000000000000000000000000000000000000000000";
         const result = await instance.registerAsset(time, name, id);
         assert.web3Event(result, {
             event: 'AssetCreated',
             args: {
-                _id: id, //32 bytes length
+                id: id, //32 bytes length
             }
         }, 'The event is emitted');
 
@@ -23,7 +23,7 @@ contract('AssetTracker', function(accounts) {
     it("...get all my asset ids", async () => {
         const instance = await AssetTracker.deployed();
         const name = "NFCChip";
-        const time = 0;
+        const time = 1;
         const id = "0x9d20000000000000000000000000000000000000000000000000000000000000";
         await instance.registerAsset(time, name, id);
         const assetIds = await instance.getAssetIds();
@@ -41,7 +41,7 @@ contract('AssetTracker', function(accounts) {
     it("...adding a new asset should created a initial create event", async () => {
         const instance = await AssetTracker.deployed();
         const name = "RFID Tag 3";
-        const time = 0;
+        const time = 1;
         const id = "0x4d73670000000000000000000000000000000000000000000000000000000000";
         await instance.registerAsset(time, name, id, {from: accounts[0]});
         const assetEvent = await instance.fetchEvent.call(id);
@@ -60,18 +60,18 @@ contract('AssetTracker', function(accounts) {
     it("...adding a new event to an asset", async () => {
         const instance = await AssetTracker.deployed();
         const name = "Mobile Device";
-        const time = 0;
+        const time = 1;
         const id = "0x8d73650000000000000000000000000000000000000000000000000000000000";
         const eventId = "0x4d73650000000000000000000000000000000000000000000000000000000000";
         const eventName = "Sensor Reading";
         const eventType = "1"; //location
         const data = ["testing data"];
         await instance.registerAsset(time, name, id, {from: accounts[0]});
-        const result = await instance.addEvent(id, eventId,  eventName, eventType, data.map((arg) => web3.toHex(arg)), 0, {from: accounts[0]});
+        const result = await instance.addEvent(id, eventId,  eventName, eventType, data.map((arg) => web3.toHex(arg)), time, {from: accounts[0]});
         assert.web3Event(result, {
             event: 'AssetEventCreated',
             args: {
-                _id: eventId, //32 bytes length
+                id: eventId, //32 bytes length
             }
         }, 'The event is emitted');
 
