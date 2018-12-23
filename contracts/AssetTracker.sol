@@ -1,21 +1,27 @@
 pragma solidity ^0.4.24;
 
-import "oraclize-api/usingOraclize.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 pragma experimental ABIEncoderV2;
 
 
-contract AssetTracker is usingOraclize, Pausable {
+/**
+ * @title AssetTracker
+ */
+contract AssetTracker is Pausable {
 
-
-    function AssetTracker() {
-
-    }
-
-    function __callback(bytes32 myid, string result) {
-        //if (msg.sender != oraclize_cbAddress()) throw;
-    }
+    /**
+     * @dev Event types that can be created.
+     */
+    enum EventTypes {CREATED, LOCATION, QUALITY, TEMPERATURE, HUMIDITY, ACCELEROMETER, CUSTOM}
+    /**
+     * @dev Mapping of user's assets.
+     */
+    mapping(address => Asset[]) private assets;
+    /**
+     * @dev Mapping of a Mapping of Events for an asset id.
+     */
+    mapping(address => mapping(bytes32 => AssetEvent)) private assetEvents;
 
     struct AssetEvent {
         bytes32 id;
@@ -30,68 +36,146 @@ contract AssetTracker is usingOraclize, Pausable {
         string name;
         bytes32 id;
         bytes32[] assetEventIds;
-        //mapping(uint => AssetEvent) assetEvents;
     }
 
+    /**
+     * @dev Event for when an asset is created.
+     */
     event AssetCreated (
-        bytes32 _id
+        bytes32 id
     );
 
+    /**
+     * @dev Event for when an asset's event is created.
+     */
     event AssetEventCreated (
-        bytes32 _id
+        bytes32 id
     );
 
-    enum EventTypes {CREATED, LOCATION, QUALITY, TEMPERATURE, HUMIDITY, ACCELEROMETER, CUSTOM}
+    /**
+     * @dev The AssetTracker constructor sets  `owner` of the contract to the sender
+     * account.
+     */
+    constructor() public {
+        owner = msg.sender;
+    }
 
-    mapping(address => Asset[]) private assets;
+    /**
+     * @dev Gets all the senders Asset Ids.
+     * @return bytes32[] The list of asset Ids.
+     */
+    function getAssetIds() public constant returns (bytes32[]) {
+        bytes32[] memory assetIds = new bytes32[](assets[msg.sender].length);
+        for (uint i = 0; i < assets[msg.sender].length; i++) {
+            assetIds[i] = assets[msg.sender][i].id;
+        }
+        return assetIds;
+    }
 
-    mapping(address => mapping(bytes32 => AssetEvent)) private assetEvents;
-
-
-    function registerAsset (uint256 _date, string _name, bytes32 _id) public {
+    /**
+     * @dev Registers an asset which can only be called when contract is not paused.
+     * @param date Timestamp of when the asset was registered.
+     * @param name The name of the asset being registered.
+     * @param id The id of the Asset being registered.
+     */
+    function registerAsset (uint256 date, string name, bytes32 id) whenNotPaused public {
         Asset asset;
-        asset.created = _date;
-        asset.id = _id;
-        asset.name = _name;
-        asset.assetEventIds.push(_id);
-        createEvent(msg.sender, _id, "Created", uint(EventTypes.CREATED), new bytes32[](0), _date);
+        asset.created = date;
+        asset.id = id;
+        asset.name = name;
+        asset.assetEventIds.push(id);
+        createEvent(msg.sender, id, "Created", uint(EventTypes.CREATED), new bytes32[](0), date);
         assets[msg.sender].push(asset);
-        emit AssetCreated(_id);
+        emit AssetCreated(id);
     }
 
-    function createEvent(address _address, bytes32 _eventId, string _name, uint _type, bytes32[] _data, uint256 _date) internal {
-        AssetEvent storage assetEvent = assetEvents[_address][_eventId];
-        assetEvent.id = _eventId;
-        assetEvent.name = _name;
-        assetEvent.eventType = _type;
-        assetEvent.data = _data;
-        assetEvent.timestamp = _date;
+    /**
+     * @dev Creates an event for an asset.
+     * @param creator The address of the creator of the event.
+     * @param eventId The id for the event being created.
+     * @param name The name of the event.
+     * @param eventType The type of the event.
+     * @param data The custom data of the event.
+     * @param date The timestamp of the event.
+     */
+    function createEvent(address creator, bytes32 eventId, string name, uint eventType, bytes32[] data, uint256 date) internal {
+        require(date != 0);
+        require(bytes(name).length > 0);
+        require(eventId.length > 0);
+        AssetEvent storage assetEvent = assetEvents[creator][eventId];
+        assetEvent.id = eventId;
+        assetEvent.name = name;
+        assetEvent.eventType = eventType;
+        assetEvent.data = data;
+        assetEvent.timestamp = date;
     }
 
-    function fetchAsset(bytes32 _id) public view returns (string, bytes32, uint256, bytes32[]) {
+    /**
+     * @dev Gets the data for an asset.
+     * @param id The id of the asset.
+     * @return string The name of the asset.
+     * @return bytes32 The id of the asset.
+     * @return uint256 The timestamp of the asset.
+     * @return bytes32 The event ids of the asset.
+     */
+    function fetchAsset(bytes32 id) public view returns (string, bytes32, uint256, bytes32[])  {
         for(uint i = 0; i < assets[msg.sender].length; i++){
-            if(equal(assets[msg.sender][i].id, _id)) {
+            if(equal(assets[msg.sender][i].id, id)) {
                 return (assets[msg.sender][i].name, assets[msg.sender][i].id, assets[msg.sender][i].created, assets[msg.sender][i].assetEventIds);
             }
         }
     }
 
-    function fetchEvent(bytes32 _eventId) public view returns (string, uint, bytes32[], uint256) {
-        AssetEvent assetEvent = assetEvents[msg.sender][_eventId];
+    /**
+     * @dev Gets the data for an event.
+     * @param eventId The id of the event.
+     * @return string The name of the event.
+     * @return bytes32 The type of event.
+     * @return uint256 The custom data of the event.
+     * @return bytes32 The timestamp of the event.
+     */
+    function fetchEvent(bytes32 eventId) public view returns (string, uint, bytes32[], uint256) {
+        AssetEvent assetEvent = assetEvents[msg.sender][eventId];
         return(assetEvent.name, assetEvent.eventType, assetEvent.data, assetEvent.timestamp);
     }
 
-    function equal(bytes32 _a, bytes32 _b) internal returns (bool) {
-        return keccak256(_a) == keccak256(_b);
+    /**
+     * @dev Determines if two bytes are equal to each other.
+     * @param a The first bytes32 variable.
+     * @param b The second bytes32 variable.
+     * @return bool The two bytes32 are equal
+     */
+    function equal(bytes32 a, bytes32 b) internal returns (bool) {
+        return keccak256(a) == keccak256(b);
     }
 
-    function addEvent(bytes32 _assetId, bytes32 _eventId, string _name, uint _type, bytes32[] _data, uint256 _timestamp) public {
+    /**
+     * @dev Creates an event for an asset and can only be used when the contact is not paused.
+     * @param assetId The asset Id
+     * @param eventId The id for the event being created.
+     * @param name The name of the event.
+     * @param eventType The type of the event.
+     * @param data The custom data of the event.
+     * @param timestamp The timestamp of the event.
+     */
+    function addEvent(bytes32 assetId, bytes32 eventId, string name, uint eventType, bytes32[] data, uint256 timestamp) whenNotPaused public {
+        require(timestamp != 0);
+        require(bytes(name).length > 0);
+        require(assetId.length > 0);
+        require(eventId.length > 0);
         for (uint i = 0; i < assets[msg.sender].length; i++) {
-            if (equal(assets[msg.sender][i].id, _assetId)) {
-                assets[msg.sender][i].assetEventIds.push(_eventId);
-                createEvent(msg.sender, _eventId, _name, _type, _data, _timestamp);
-                emit AssetEventCreated(_eventId);
+            if (equal(assets[msg.sender][i].id, assetId)) {
+                assets[msg.sender][i].assetEventIds.push(eventId);
+                createEvent(msg.sender, eventId, name, eventType, data, timestamp);
+                emit AssetEventCreated(eventId);
             }
         }
+    }
+
+    /**
+     * @dev Destroys the contact invoked by the owner of the contract.
+     */
+    function destroyContract() onlyOwner public {
+        selfdestruct(msg.sender);
     }
 }
