@@ -10,8 +10,17 @@ pragma experimental ABIEncoderV2;
  */
 contract AssetTracker is Pausable {
 
+    /**
+     * @dev Event types that can be created.
+     */
     enum EventTypes {CREATED, LOCATION, QUALITY, TEMPERATURE, HUMIDITY, ACCELEROMETER, CUSTOM}
+    /**
+     * @dev Mapping of user's assets.
+     */
     mapping(address => Asset[]) private assets;
+    /**
+     * @dev Mapping of a Mapping of Events for an asset id.
+     */
     mapping(address => mapping(bytes32 => AssetEvent)) private assetEvents;
 
     struct AssetEvent {
@@ -29,10 +38,16 @@ contract AssetTracker is Pausable {
         bytes32[] assetEventIds;
     }
 
+    /**
+     * @dev Event for when an asset is created.
+     */
     event AssetCreated (
         bytes32 id
     );
 
+    /**
+     * @dev Event for when an asset's event is created.
+     */
     event AssetEventCreated (
         bytes32 id
     );
