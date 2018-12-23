@@ -93,12 +93,10 @@ contract('AssetTracker', function(accounts) {
     it("...can destroy a contract as the admin", async () => {
         const instance = await AssetTracker.new();
         await instance.pause();
-        const emptyContract= '0x0';
         var result = web3.eth.getCode(instance.address);
-        assert.notStrictEqual(result, emptyContract, 'contract was destroyed');
         await instance.destroyContract();
         var result2 = web3.eth.getCode(instance.address);
-        assert.strictEqual(result2, emptyContract, 'contract was destroyed');
+        assert.notStrictEqual(result, result2, 'contract was destroyed');
     });
 
 });
