@@ -19,6 +19,7 @@ class AssetHistory extends Component {
         this.onEventCreated = this.onEventCreated.bind(this);
         this.onContractError = this.onContractError.bind(this);
         this.getAssetDetails = this.getAssetDetails.bind(this);
+        this.getEvents = this.getEvents.bind(this);
         this.getEvent = this.getEvent.bind(this);
         this.createEvent = this.createEvent.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -56,10 +57,13 @@ class AssetHistory extends Component {
         let targetName = event.target.name;
         let currentNewEvent = this.state.newEvent;
         currentNewEvent[targetName] = event.target.value;
-        const isEnabled =
-            this.state.newEvent.eventName.length > 0 &&
-            this.state.newEvent.timestamp.length > 0;
+        let isEnabled = false;
+        if( this.state.newEvent.eventName && this.state.newEvent.timestamp) {
+            isEnabled =
+                this.state.newEvent.eventName.length > 0 &&
+                this.state.newEvent.timestamp.length > 0;
 
+        }
         this.setState({
             newEvent: currentNewEvent,
             isEnabled: isEnabled
@@ -80,7 +84,7 @@ class AssetHistory extends Component {
                         eventIds: result[3]
                     }
                 });
-                that.getEvent();
+                that.getEvents();
             }).catch(function (e) {
             console.log(e);
         });
@@ -92,12 +96,12 @@ class AssetHistory extends Component {
         if (this.state.newEvent.data) {
             data = this.state.newEvent.data.split("\n");
         }
-        this.contracts.AssetTracker.methods.addEvent(this.assetId, this.web3.utils.fromAscii(Date.now()), this.state.newEvent.eventName, this.state.newEvent.type,
+        this.contracts.AssetTracker.methods.addEvent(this.assetId, this.web3.utils.fromAscii(Date.now().toLocaleString()), this.state.newEvent.eventName, this.state.newEvent.type,
             data.map((arg) => this.web3.utils.toHex(arg)), eventDate).send()
             .on('error', this.onContractError);
     }
 
-    async getEvent() {
+    async getEvents() {
         const eventDetails = [];
         for (let i = 0; i < this.state.asset.eventIds.length; i++) {
             const result = await this.contracts.AssetTracker.methods.fetchEvent(this.state.asset.eventIds[i]).call();
@@ -111,7 +115,28 @@ class AssetHistory extends Component {
                 eventDetails: eventDetails
             })
         }
-        this.createTimeline();
+    }
+
+    async getEvent(eventId) {
+        let eventIds = this.state.asset.eventIds;
+        var containsEventId = (eventIds.indexOf(eventId) > -1);
+        if (!containsEventId) {
+            var eventDetails = this.state.eventDetails;
+            eventIds.push(eventId);
+            const result = await this.contracts.AssetTracker.methods.fetchEvent(eventId).call();
+            eventDetails.push({
+                name: result[0],
+                type: result[1],
+                data: result[2].map((arg) => this.web3.utils.toUtf8(arg)),
+                date: new Date(result[3] * 1000).toISOString()
+            });
+            this.setState({
+                asset: {
+                    eventIds: eventIds
+                },
+                eventDetails: eventDetails
+            });
+        }
     }
 
     onEventCreated(error, event) {
@@ -119,9 +144,17 @@ class AssetHistory extends Component {
             this.setState({
                 showTxMsg: true,
                 txMsg: 'Event was created.',
-                txClassName: "success"
+                txClassName: "success",
+                newEvent: {
+                    assetId: this.assetId,
+                    eventId: '',
+                    eventName: '',
+                    type: "1",
+                    data: "",
+                    timestamp: ''
+                },
             });
-            this.getEvent();
+            this.getEvent(event.raw.data);
         } else {
             this.onContractError(error);
         }
@@ -188,7 +221,10 @@ class AssetHistory extends Component {
     }
 
     createTimeline() {
-        var timeline = [];
+        this.state.eventDetails.sort(function(a,b){
+            return new Date(a.date) - new Date(b.date);
+        });
+        let timeline = [];
         for (let i = 0; i < this.state.eventDetails.length; i++) {
             let icon = {};
             switch (this.state.eventDetails[i].type) {
