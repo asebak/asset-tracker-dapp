@@ -58,7 +58,7 @@ Once the app is started you will see the app as below:
 
 ![Main Screen](docs/img/main.png)
 
-You can view an asset by the id, register an asset or view your profile.
+You can view an asset by an id, register an asset or view your profile.
 
 ##### View Profile Page
 When you go to the view profile page, you will see your account details and all the assets you have registered.
@@ -66,19 +66,19 @@ When you go to the view profile page, you will see your account details and all 
 ![Profile Screen](docs/img/profile.png)
 
 ##### Register Asset Page
-The first thing to do in the App is the visit the register asset page.  You place any id and the name, such as the below example:
+The first thing to do in the App is to visit the register asset page.  You place any id and the name, such as the below example:
 
 ![Register Asset Screen](docs/img/registerasset.png)
 
-Once you click submit you will get a metamask confirmation box.  After confirming the metamask details and clicking submit there will be a message on the UI if it was successful or an error occurred.
+Once you click submit you will get a metamask confirmation box.  After confirming the metamask details and clicking submit there will be a message on the UI if it was successful or an error occurred.  If you are running a local instance it should return a confirmation message pretty quickly, on a testnet it might take sometime. 
 
 
 ##### View Asset
-Going back to the main page you can view the asset created by entering the id of the asset.
+Going back to the main page or profile page you can view the asset created by entering the id of the asset.
 
 ![View Asset Screen](docs/img/viewasset.png)
 
-Once you see the table details, you can click the view button under the History column.
+Once you see the table details, you can click the view button under the History column to see the timeline of the asset.
 
 
 ##### View/Create Events Timeline
@@ -86,8 +86,10 @@ After clicking the view button of an asset, you can view the timeline history.
 
 ![View Timeline Screen](docs/img/viewtimeline.png)
 
-Initially a Create event is shown whenever an asset is registered.  You can also view the custom data in any event
+Initially a Create event is shown whenever a new asset is registered. 
 
 You can add any new types of events from the below, an example is shown below adding a temperature reading.
 
 ![Add Event Screen](docs/img/createevent.png)
+
+This is the basic example of how the contract works.  In a real case scenario these functions would be executed both by users and devices depending on where they are located in the supply chain.
