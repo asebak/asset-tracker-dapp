@@ -79,10 +79,14 @@ contract AssetTracker is Pausable {
      * @param id The id of the Asset being registered.
      */
     function registerAsset (uint256 date, string name, bytes32 id) whenNotPaused public {
+        require(date != 0);
+        require(bytes(name).length > 0);
+        require(id.length > 0);
         Asset asset;
         asset.created = date;
         asset.id = id;
         asset.name = name;
+        asset.assetEventIds.length = 0;
         asset.assetEventIds.push(id);
         createEvent(msg.sender, id, "Created", uint(EventTypes.CREATED), new bytes32[](0), date);
         assets[msg.sender].push(asset);

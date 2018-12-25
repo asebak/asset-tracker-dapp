@@ -42,7 +42,8 @@ class AssetHistory extends Component {
                 data: "",
                 timestamp: ''
             },
-            eventDetails: []
+            eventDetails: [],
+            isEnabled: false
         };
 
         this.contracts.AssetTracker.events
@@ -55,8 +56,13 @@ class AssetHistory extends Component {
         let targetName = event.target.name;
         let currentNewEvent = this.state.newEvent;
         currentNewEvent[targetName] = event.target.value;
+        const isEnabled =
+            this.state.newEvent.eventName.length > 0 &&
+            this.state.newEvent.timestamp.length > 0;
+
         this.setState({
-            newEvent: currentNewEvent
+            newEvent: currentNewEvent,
+            isEnabled: isEnabled
         });
     }
 
@@ -87,7 +93,8 @@ class AssetHistory extends Component {
             data = this.state.newEvent.data.split("\n");
         }
         this.contracts.AssetTracker.methods.addEvent(this.assetId, this.web3.utils.fromAscii(Date.now()), this.state.newEvent.eventName, this.state.newEvent.type,
-            data.map((arg) => this.web3.utils.toHex(arg)), eventDate).send();
+            data.map((arg) => this.web3.utils.toHex(arg)), eventDate).send()
+            .on('error', this.onContractError);
     }
 
     async getEvent() {
@@ -97,7 +104,7 @@ class AssetHistory extends Component {
             eventDetails.push({
                 name: result[0],
                 type: result[1],
-                data: result[2],
+                data: result[2].map((arg) => this.web3.utils.toUtf8(arg)),
                 date: new Date(result[3] * 1000).toISOString()
             });
             this.setState({
@@ -123,7 +130,7 @@ class AssetHistory extends Component {
     onContractError(error) {
         this.setState({
             showTxMsg: true,
-            txMsg: 'An error occured: ' + JSON.stringify(error),
+            txMsg: 'An error occured: ' + error.message,
             txClassName: "error"
         });
     }
@@ -171,7 +178,8 @@ class AssetHistory extends Component {
                     </fieldset>
 
                 </form>
-                <button type="button" onClick={this.createEvent} className="pure-button pure-button-primary">Add Event
+                <button type="button" disabled={!this.state.isEnabled} onClick={this.createEvent}
+                        className="pure-button pure-button-primary">Add Event
                 </button>
                 <span hidden={!this.state.showTxMsg}
                       className={'pure-form-message ' + this.state.txClassName}>{this.state.txMsg}</span>

@@ -109,4 +109,16 @@ contract('AssetTracker', function(accounts) {
         assert.notStrictEqual(result, result2, 'contract was destroyed');
     });
 
+    it("...registering two assets should only create a single initial event", async () => {
+        //this test was created due to a bug in the solidity code and making sure it was covered.
+        const instance = await AssetTracker.new();
+        const name = "RFID Tag 3";
+        const time = 1;
+        const id = "0x4d73670000000000000000000000000000000000000000000000000000000000";
+        const id2 = "0x4d73580000000000000000000000000000000000000000000000000000000000";
+        await instance.registerAsset(time, name, id, {from: accounts[0]});
+        await instance.registerAsset(time, name, id2, {from: accounts[0]});
+        const asset = await instance.fetchAsset.call(id2);
+        assert.strictEqual(asset[3].length, 1, 'only one event should be registered when registering a new asset');
+    });
 });
