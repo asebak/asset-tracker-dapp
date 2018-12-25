@@ -16,7 +16,8 @@ class RegisterAsset extends Component {
             showTxMsg: false,
             txMsg: '',
             txClassName: '',
-            date: Math.floor(new Date().getTime() / 1000)
+            date: Math.floor(new Date().getTime() / 1000),
+            isEnabled: false
         };
         this.contracts.AssetTracker.events
             .AssetCreated({/* eventOptions */}, this.onAssetCreated)
@@ -38,13 +39,15 @@ class RegisterAsset extends Component {
     onContractError(error) {
         this.setState({
             showTxMsg: true,
-            txMsg: 'An error occured: ' + JSON.stringify(error),
+            txMsg: 'An error occured: ' + error.message,
             txClassName: "error"
         });
     }
 
     handleInputChange(event) {
-        this.setState({[event.target.name]: event.target.value, showTxMsg: false})
+        var isEnabled = this.state.assetName.length > 0 &&
+            this.state.identifier.length > 0;
+        this.setState({[event.target.name]: event.target.value, showTxMsg: false, isEnabled: isEnabled})
     }
 
     render() {
@@ -56,21 +59,22 @@ class RegisterAsset extends Component {
                     <fieldset>
                         <div className="pure-control-group">
                             <label htmlFor="identifier">Id</label>
-                            <input name="identifier" type="text" value={this.state.id} onChange={this.handleInputChange}
+                            <input name="identifier" type="text" value={this.state.id} onBlur={this.handleInputChange} onChange={this.handleInputChange}
                                    placeholder="Asset Id" required={true}/>
                         </div>
 
                         <div className="pure-control-group">
                             <label htmlFor="name">Name</label>
-                            <input name="assetName" type="text" value={this.state.name}
+                            <input name="assetName" type="text" value={this.state.name} onBlur={this.handleInputChange}
                                    onChange={this.handleInputChange} placeholder="Asset Name" required={true}/>
                         </div>
 
                         <div className="pure-controls">
-                            <button type="button" className="pure-button pure-button-primary"
+                            <button type="button" className="pure-button pure-button-primary" disabled={!this.state.isEnabled}
                                     onClick={() => this.handleRegisterAsset()}>Submit
                             </button>
                         </div>
+                        <br/>
                         <span hidden={!this.state.showTxMsg} className={'pure-form-message ' + this.state.txClassName }>{this.state.txMsg}</span>
                     </fieldset>
                 </form>
@@ -79,7 +83,8 @@ class RegisterAsset extends Component {
     }
 
     handleRegisterAsset() {
-        this.contracts.AssetTracker.methods.registerAsset(this.state.date, this.state.assetName, this.web3.utils.fromAscii(this.state.identifier)).send();
+        this.contracts.AssetTracker.methods.registerAsset(this.state.date, this.state.assetName, this.web3.utils.fromAscii(this.state.identifier)).send()
+            .on('error', this.onContractError);
     }
 
 }
