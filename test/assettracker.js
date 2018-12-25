@@ -109,4 +109,45 @@ contract('AssetTracker', function(accounts) {
         assert.notStrictEqual(result, result2, 'contract was destroyed');
     });
 
+    it("...registering two assets should only create a single initial event", async () => {
+        //this test was created due to a bug in the solidity code and making sure it was covered.
+        const instance = await AssetTracker.new();
+        const name = "RFID Tag 3";
+        const time = 1;
+        const id = "0x4d73670000000000000000000000000000000000000000000000000000000000";
+        const id2 = "0x4d73580000000000000000000000000000000000000000000000000000000000";
+        await instance.registerAsset(time, name, id, {from: accounts[0]});
+        await instance.registerAsset(time, name, id2, {from: accounts[0]});
+        const asset = await instance.fetchAsset.call(id2);
+        assert.strictEqual(asset[3].length, 1, 'only one event should be registered when registering a new asset');
+    });
+
+
+    it("...adding a several events to an asset", async () => {
+        //this test was created due to a bug in the solidity code and making sure it was covered.
+        const instance = await AssetTracker.new();
+        const name = "Mobile Device";
+        const time = 1;
+        const id = "0x8d73650000000000000000000000000000000000000000000000000000000000";
+        const eventId =  web3.fromAscii(Date.now().toLocaleString());
+        const eventName = "Sensor Reading";
+        const eventType = "1"; //location
+        const eventId2 =  web3.fromAscii(Date.now().toLocaleString());
+        const eventName2 = "Data Validation";
+        const eventType2 = "2"; //quality
+        const data = ["testing data"];
+        await instance.registerAsset(time, name, id, {from: accounts[0]});
+        //adding a new event to the asset
+
+        await instance.addEvent(id, eventId,  eventName, eventType, data.map((arg) => web3.toHex(arg)), time, {from: accounts[0]});
+        await instance.addEvent(id, eventId2,  eventName2, eventType2, data.map((arg) => web3.toHex(arg)), time, {from: accounts[0]});
+
+
+        const assetEvent = await instance.fetchEvent.call(eventId);
+        const assetEvent2 = await instance.fetchEvent.call(eventId2);
+
+
+        assert.strictEqual(assetEvent[1].valueOf(), eventType, 'event type should be set should be set for the first event created');
+        assert.strictEqual(assetEvent2[1].valueOf(), eventType2, 'event type should be set for second event created');
+    });
 });
