@@ -39,9 +39,16 @@ $ truffle test
 $ npm start
 ```
 
-### Rinkenby Address
+### Rinkenby Testnet Address
 
 It's Located in docs/deployed_addresses.txt
+
+### Deployment to a Rinkenby testnet 
+1) Get an infura.io secret key and some ether for your account on the Rinkenby network
+2) In truffle.js file edit mnemonic and apiKey with your details and then run the following command
+```sh
+$ truffle migrate --network rinkeby
+```
 
 ### How to use the app
 
