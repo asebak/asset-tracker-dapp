@@ -39,6 +39,9 @@ $ truffle test
 $ npm start
 ```
 
+### Documentation
+All documentation is stored in the docs/ folder.
+
 ### Rinkenby Testnet Address
 https://rinkeby.etherscan.io/address/0xad053378589f890f1fa5b52bde25e8ad2f083f01
 
