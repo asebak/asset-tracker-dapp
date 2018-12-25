@@ -1,7 +1,7 @@
 # Avoiding Common Attacks
 These are the actions I have taken to avoid common attacks and any security concerns. 
 
-The scan for the code was done using Smartcheck any security and vulnerabilities that could potentially happen: 
+The scan for the code was done using Smartcheck any security and vulnerabilities that could potentially happen and help fix problems with the code: 
 
 https://tool.smartdec.net/scan/97fa11d6fdc84628a295df1b2353720d
 
