@@ -25,12 +25,12 @@ Although the tampering and counterfeit aspects are more at the hardware level, b
 ```sh
 $ npm install
 $ ganache-cli &
-$ truffle migrate --network integration
+$ truffle migrate
 ```
 
 ### Running Tests
 ```sh
-$ truffle test --network integration
+$ truffle test
 ```
 
 ### Running Web App
