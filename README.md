@@ -40,6 +40,7 @@ $ npm start
 ```
 
 ### Rinkenby Testnet Address
+https://rinkeby.etherscan.io/address/0xad053378589f890f1fa5b52bde25e8ad2f083f01
 
 It's Located in docs/deployed_addresses.txt
 
