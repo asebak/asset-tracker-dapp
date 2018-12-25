@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
@@ -64,9 +64,10 @@ contract AssetTracker is Pausable {
      * @dev Gets all the senders Asset Ids.
      * @return bytes32[] The list of asset Ids.
      */
-    function getAssetIds() public constant returns (bytes32[]) {
+    function getAssetIds() public view returns (bytes32[]) {
         bytes32[] memory assetIds = new bytes32[](assets[msg.sender].length);
-        for (uint i = 0; i < assets[msg.sender].length; i++) {
+        uint arrayLength = assets[msg.sender].length;
+        for (uint i = 0; i < arrayLength; i++) {
             assetIds[i] = assets[msg.sender][i].id;
         }
         return assetIds;
@@ -86,7 +87,7 @@ contract AssetTracker is Pausable {
         asset.created = date;
         asset.id = id;
         asset.name = name;
-        asset.assetEventIds.length = 0;
+        delete asset.assetEventIds;
         asset.assetEventIds.push(id);
         createEvent(msg.sender, id, "Created", uint(EventTypes.CREATED), new bytes32[](0), date);
         assets[msg.sender].push(asset);
@@ -123,7 +124,8 @@ contract AssetTracker is Pausable {
      * @return bytes32 The event ids of the asset.
      */
     function fetchAsset(bytes32 id) public view returns (string, bytes32, uint256, bytes32[])  {
-        for(uint i = 0; i < assets[msg.sender].length; i++){
+        uint arrayLength = assets[msg.sender].length;
+        for(uint i = 0; i < arrayLength; i++){
             if(equal(assets[msg.sender][i].id, id)) {
                 return (assets[msg.sender][i].name, assets[msg.sender][i].id, assets[msg.sender][i].created, assets[msg.sender][i].assetEventIds);
             }
@@ -167,7 +169,8 @@ contract AssetTracker is Pausable {
         require(bytes(name).length > 0);
         require(assetId.length > 0);
         require(eventId.length > 0);
-        for (uint i = 0; i < assets[msg.sender].length; i++) {
+        uint arrayLength = assets[msg.sender].length;
+        for (uint i = 0; i < arrayLength; i++) {
             if (equal(assets[msg.sender][i].id, assetId)) {
                 assets[msg.sender][i].assetEventIds.push(eventId);
                 createEvent(msg.sender, eventId, name, eventType, data, timestamp);
