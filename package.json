@@ -1,6 +1,6 @@
 {
-  "name": "drizzle-box",
-  "version": "1.0.0",
+  "name": "asset-tracker-app",
+  "version": "1.0.1",
   "devDependencies": {
     "ganache-cli": "^6.1.6",
     "openzeppelin-solidity": "^1.10.0",
