@@ -6,9 +6,6 @@
 One of the best use cases for blockchain technology is combining IoT sensors and smart contracts to create immutability for  data integrity to make sure a supply chain is compliant with regulations, prevent tampering and counterfeits in products through full transparency using sensors to record this data on the blockchain.
 Although the tampering and counterfeit aspects are more at the hardware level, blockchain technology allows the data from these sensors to be immutable allowing anyone to view the history of an asset being tracked to make sure they are fully compliant such as weather a certain product had the proper temperature, humidity levels, went through proper quality control processes or even the locations in the chain that it went to. 
 
-### Creator 
-Ahmad Sebak
-
 ### User Stories
 
 1. As an owner of IoT devices, I would like to use sensor capabilities for tracking and tracing assets providing full transparency to end users on the data.
